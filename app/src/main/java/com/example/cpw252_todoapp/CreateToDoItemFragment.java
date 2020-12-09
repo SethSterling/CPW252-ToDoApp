@@ -7,6 +7,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +29,10 @@ public class CreateToDoItemFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private EditText title;
+    private EditText desc;
+    private EditText dueDate;
 
     public CreateToDoItemFragment() {
         // Required empty public constructor
@@ -59,6 +69,39 @@ public class CreateToDoItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_to_do_item, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_to_do_item, container, false);
+
+        title = view.findViewById(R.id.title_textbox);
+        dueDate = view.findViewById(R.id.date_textbox);
+        desc = view.findViewById(R.id.description_textbox);
+
+        Button button = view.findViewById(R.id.add_item_button);
+        button.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                addButtonClick(v);
+            }
+        });
+
+        return view;
     }
+
+    public void addButtonClick(View v){
+        if(title.getText().length() == 0){
+            Snackbar error = Snackbar.make(v, "Title is Required", Snackbar.LENGTH_SHORT);
+            error.show();
+        }
+        else {
+            String titleText = title.getText().toString();
+            String dueDateText = dueDate.getText().toString();
+            String descText = desc.getText().toString();
+            ToDoItem x = createToDoItem(titleText, dueDateText, descText);
+            Snackbar yes = Snackbar.make(v, x.getTitle() + " " + x.getDueDate() + " "+ x.getDescription(), Snackbar.LENGTH_LONG);
+            yes.show();
+        }
+    }
+
+    private ToDoItem createToDoItem(String title, String dueDate, String desc) {
+        return new ToDoItem(title, dueDate, desc);
+    }
+
 }

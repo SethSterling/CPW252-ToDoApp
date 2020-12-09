@@ -1,3 +1,5 @@
+package com.example.cpw252_todoapp;
+
 public class ToDoItem {
     private String Title;
     private String DueDate;
@@ -11,6 +13,9 @@ public class ToDoItem {
 
     public ToDoItem(String title, String dueDate){
         this(title, dueDate, "No Description");
+    }
+    public ToDoItem(String title){
+        this(title, "No Due Date", "No Description");
     }
 
     public String getTitle(){
