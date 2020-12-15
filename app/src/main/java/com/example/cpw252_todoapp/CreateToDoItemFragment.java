@@ -1,5 +1,6 @@
 package com.example.cpw252_todoapp;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -20,6 +19,23 @@ import com.google.android.material.snackbar.Snackbar;
  * create an instance of this fragment.
  */
 public class CreateToDoItemFragment extends Fragment {
+
+    AddToDoListener activityCallback;
+
+    public interface AddToDoListener{
+        public void AddToDo(ToDoItem toDoItem);
+    }
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        try{
+            activityCallback = (AddToDoListener) context;
+        }
+        catch (ClassCastException e){
+            throw new ClassCastException(context.toString());
+        }
+    }
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +75,7 @@ public class CreateToDoItemFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -75,10 +92,18 @@ public class CreateToDoItemFragment extends Fragment {
         dueDate = view.findViewById(R.id.date_textbox);
         desc = view.findViewById(R.id.description_textbox);
 
+
         Button button = view.findViewById(R.id.add_item_button);
         button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 addButtonClick(v);
+            }
+        });
+
+        Button clearButton = view.findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                clearTextBox();
             }
         });
 
@@ -87,7 +112,7 @@ public class CreateToDoItemFragment extends Fragment {
 
     public void addButtonClick(View v){
         if(title.getText().length() == 0){
-            Snackbar error = Snackbar.make(v, "Title is Required", Snackbar.LENGTH_SHORT);
+            Snackbar error = Snackbar.make(v, "Title is Required", Snackbar.LENGTH_LONG);
             error.show();
         }
         else {
@@ -95,13 +120,19 @@ public class CreateToDoItemFragment extends Fragment {
             String dueDateText = dueDate.getText().toString();
             String descText = desc.getText().toString();
             ToDoItem x = createToDoItem(titleText, dueDateText, descText);
-            Snackbar yes = Snackbar.make(v, x.getTitle() + " " + x.getDueDate() + " "+ x.getDescription(), Snackbar.LENGTH_LONG);
-            yes.show();
+            clearTextBox();
+            activityCallback.AddToDo(x);
         }
     }
 
     private ToDoItem createToDoItem(String title, String dueDate, String desc) {
         return new ToDoItem(title, dueDate, desc);
+    }
+
+    private void clearTextBox(){
+        title.setText("");
+        dueDate.setText("");
+        desc.setText("");
     }
 
 }
